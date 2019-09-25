@@ -3,12 +3,20 @@
 # =======
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 import telegram as telegram
+
 # other modules
 # ------------ 
 from functools import wraps
+import logging
+from random import randrange
 
 # preamble code
 # =============
+
+# set basic logging
+# -----------------
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                     level=logging.INFO)
 
 # global question database
 # ------------------------
@@ -95,6 +103,86 @@ def help(update, context):
                      parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
+def welcome_message(update, context):
+    """
+    'welcome_message' generated the message sent to new users joining the group
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+
+    # welcome message
+    for member in update.message.new_chat_members:
+        msg = ""
+        if member.username is None:
+            msg += "Benvenuto {name}. Per prima cosa imposta uno username ".format(name=member.name)
+            msg += "per facilitare le conversazioni future, grazie.\n\n"
+            msg += "Inoltre, per poter rimanere dovrai rispondere correttamente alla seguente domanda.\n"
+            msg += "(Se sbagli sarai rimosso dal gruppo con possibilità di rientrare quando vuoi)."
+        else:
+            msg += "Ciao {username}!\n".format(username=member.username)
+            msg += "Benvenuto nel gruppo. Per poter rimanere dovrai rispondere alla seguente domanda.\n"
+            msg += "(Se sbagli sarai rimosso dal gruppo con possibilità di rientrare quando vuoi)."
+        update.message.reply_text(msg)
+
+        # update chat_data with the used_id and the index of its question
+        context.chat_data[member.id] = randrange(len(question))
+
+    # send the question
+    question_text = "{name}\n".format(name=member.name) + question[context.chat_data[member.id]]
+    possible_answers = answer[context.chat_data[member.id]]
+    reply_markup = telegram.InlineKeyboardMarkup(possible_answers)
+    context.bot.send_message(chat_id=update.message.chat_id, text=question_text, reply_markup=reply_markup)
+
+
+def answer_check(update, context):
+    """
+    'answer_check' reacts to an InlineKeyboardButton pressure.
+    It evaluates if the answer is True or False.
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    # get query
+    query = update.callback_query
+    
+    
+    # check if the user is in chat_data (i.e. he is expected to answer)
+    if query.from_user.id in context.chat_data:
+        # check if user is answering to his own question
+        if query.message.reply_markup.inline_keyboard == answer[context.chat_data[query.from_user.id]]:
+            
+            # send selected answer
+            context.bot.edit_message_text(text="Hai hai scelto: {}".format(query.data),
+                                        chat_id=query.message.chat_id,
+                                        message_id=query.message.message_id)
+            
+            # check correctness
+            if query.data == right_answer[context.chat_data[query.from_user.id]]:
+                context.bot.send_message(chat_id=query.message.chat_id, text="Risposta corretta! Buona permanenza nel gruppo!")
+            else:
+                msg = "Risposta errata! Entro 15 secondi sarai rimosso dal gruppo.\n"
+                msg +="Rientra quando vuoi ma dovrai rispondere correttamente per poter rimanere."
+                context.bot.send_message(chat_id=query.message.chat_id, text=msg)
+                # kick the user after a given delay
+                def delayed_kick(context, query=query):
+                    context.bot.kickChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id)
+                    context.bot.unbanChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id)
+                context.job_queue.run_once(delayed_kick, 15)
+                
+            del context.chat_data[query.from_user.id]
+
+        else:
+            msg = "@{username} questa non è la tua domanda.".format(username=query.from_user.name)
+            context.bot.send_message(chat_id=query.message.chat_id, text=msg)
+    
+    else:
+        msg = "@{username} tu hai già risposto.".format(username=query.from_user.name)
+        context.bot.send_message(chat_id=query.message.chat_id, text=msg)
+
+
 # bot - main
 # ==========
 def main():
@@ -125,6 +213,11 @@ def main():
     # /help handler
     help_handler = CommandHandler('help', help)
     dispatcher.add_handler(help_handler)
+
+    # welcome message
+    add_group_handle = MessageHandler(Filters.status_update.new_chat_members, welcome_message)
+    dispatcher.add_handler(add_group_handle)
+    updater.dispatcher.add_handler(CallbackQueryHandler(answer_check))
 
     # start the BOT
     updater.start_polling()
