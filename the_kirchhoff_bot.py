@@ -19,12 +19,43 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # global question database
 # ------------------------
-question = {0:"Qual'è l'unità di misura della tensione?"}
-answer = {0:[[telegram.InlineKeyboardButton("metri (m)", callback_data="metri (m)"),
-                telegram.InlineKeyboardButton("joule (J)", callback_data="joule (J)")],
-                [telegram.InlineKeyboardButton("volt (V)", callback_data="volt (V)"),
-                telegram.InlineKeyboardButton("newton (N)", callback_data="newton (N)")]]}
-right_answer = {0:"volt (V)"}
+def generate_buttons(labels):
+    buttons = [[telegram.InlineKeyboardButton(labels[0], callback_data=labels[0]),
+                telegram.InlineKeyboardButton(labels[1], callback_data=labels[1])],
+                [telegram.InlineKeyboardButton(labels[2], callback_data=labels[2]),
+                telegram.InlineKeyboardButton(labels[3], callback_data=labels[3])]]
+    return buttons
+
+question = {0:"Qual'è l'unità di misura della tensione elettrica?",
+            1:"Qual'è il modulo del numero complesso 4+i3 ?",
+            2:"Qual'è l'unità di misura della corrente elettrica?",
+            3:"Qual'è l'unità di misura della potenza?",
+            4:"Qual'è la derivata di sin(x) rispetto a x?",
+            5:"Sia f(x)=k1*x + k2. Qual'è la derivata di f(x) rispetto a x?",
+            6:"Quanto vale il valor medio di sin(x) calcolato su un periodo?",
+            7:"Qual'è l'unità di misura del campo elettrico?",
+            8:"Qual'è l'unità di misura del campo magnetico?",
+            9:"Qual'è l'unità di misura della frequenza?"}
+answer = {0:generate_buttons(['metri (m)', 'joule (J)', 'volt (V)', 'newton (N)']),
+          1:generate_buttons(['16', '5', '9', '25']),
+          2:generate_buttons(['ampere (A)', 'watt (W)', 'Farad (F)', 'weber (Wb)']),
+          3:generate_buttons(['watt (W)', 'joule (J)', 'pascal (Pa)', 'kelvin (K)']),
+          4:generate_buttons(['log(x)', '1/tan(x)', '-cos(x)', 'cos(x)']),
+          5:generate_buttons(['k2+k1', 'k1', 'k2', 'k1*k2']),
+          6:generate_buttons(['0', '1', 'infinito', '-1']),
+          7:generate_buttons(['V', 'kg', 'm/V', 'V/m']),
+          8:generate_buttons(['rad', 'A/m', 'm2', 'Hz']),
+          9:generate_buttons(['m', 'Wb', 'Hz', '°C'])}
+right_answer = {0:"volt (V)",
+                1:"25",
+                2:"ampere (A)",
+                3:"watt (J)",
+                4:"cos(x)",
+                5:"k1",
+                6:"0",
+                7:"V/m",
+                8:"A/m",
+                9:"Hz"}
 
 
 # admin list
@@ -192,11 +223,6 @@ def send(update, context):
     :param context: CallbackContext
     :return: None
     """
-    print(update.message)
-    print("\n\n")
-    print(update.message.reply_to_message)
-    print("\n\n")
-    print(hasattr(update.message, 'reply_to_message'))
     msg = update.message.text.replace('/send ','').replace('\*','*'). replace('\_','_')
     context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
     if update.message.reply_to_message is None:
