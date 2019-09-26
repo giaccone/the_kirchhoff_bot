@@ -1,4 +1,3 @@
- 
 # modules
 # =======
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
@@ -183,6 +182,65 @@ def answer_check(update, context):
         context.bot.send_message(chat_id=query.message.chat_id, text=msg)
 
 
+@restricted
+def send(update, context):
+    """
+    'send' send a message in the group through the bot
+    usage: /send message of the text
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    print(update.message)
+    print("\n\n")
+    print(update.message.reply_to_message)
+    print("\n\n")
+    print(hasattr(update.message, 'reply_to_message'))
+    msg = update.message.text.replace('/send ','').replace('\*','*'). replace('\_','_')
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+    if update.message.reply_to_message is None:
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                text=msg,
+                                parse_mode=telegram.ParseMode.MARKDOWN,
+                                disable_web_page_preview=True)
+    else:
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                text=msg,
+                                parse_mode=telegram.ParseMode.MARKDOWN,
+                                disable_web_page_preview=True,
+                                reply_to_message_id=update.message.reply_to_message.message_id)
+
+
+@restricted
+def kick(update, context):
+    """
+    'kick' kick user out from the group
+    usage: /send message of the text
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    user_id = update.message.reply_to_message.from_user.id
+    context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=user_id)
+    context.bot.unbanChatMember(chat_id=update.message.chat_id, user_id=user_id)
+
+
+@restricted
+def ban(update, context):
+    """
+    'kick' kick user out from the group
+    usage: /send message of the text
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    user_id = update.message.reply_to_message.from_user.id
+    context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=user_id)
+
+
 # bot - main
 # ==========
 def main():
@@ -218,6 +276,18 @@ def main():
     add_group_handle = MessageHandler(Filters.status_update.new_chat_members, welcome_message)
     dispatcher.add_handler(add_group_handle)
     updater.dispatcher.add_handler(CallbackQueryHandler(answer_check))
+
+    # /send handler
+    send_handler = CommandHandler('send', send)
+    dispatcher.add_handler(send_handler)
+
+    # /kick handler
+    kick_handler = CommandHandler('kick', kick)
+    dispatcher.add_handler(kick_handler)
+
+    # /ban handler
+    ban_handler = CommandHandler('kick', ban)
+    dispatcher.add_handler(kick_handler)
 
     # start the BOT
     updater.start_polling()
