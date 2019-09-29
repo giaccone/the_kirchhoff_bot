@@ -47,9 +47,9 @@ answer = {0:generate_buttons(['metri (m)', 'joule (J)', 'volt (V)', 'newton (N)'
           8:generate_buttons(['rad', 'A/m', 'm2', 'Hz']),
           9:generate_buttons(['m', 'Wb', 'Hz', '°C'])}
 right_answer = {0:"volt (V)",
-                1:"25",
+                1:"5",
                 2:"ampere (A)",
-                3:"watt (J)",
+                3:"watt (W)",
                 4:"cos(x)",
                 5:"k1",
                 6:"0",
@@ -242,7 +242,6 @@ def send(update, context):
 def kick(update, context):
     """
     'kick' kick user out from the group
-    usage: /send message of the text
 
     :param update: bot update
     :param context: CallbackContext
@@ -256,8 +255,7 @@ def kick(update, context):
 @restricted
 def ban(update, context):
     """
-    'kick' kick user out from the group
-    usage: /send message of the text
+    'ban' ban user out from the group
 
     :param update: bot update
     :param context: CallbackContext
@@ -266,6 +264,52 @@ def ban(update, context):
     user_id = update.message.reply_to_message.from_user.id
     context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=user_id)
 
+
+def check_text(update, context):
+    """
+    'check_text' reply to selected text messages
+    * warn users without username
+    * warn users using incorrect terminology
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    
+    if update.message.from_user.username is None:
+        msg = "Ciao {name}.\n*Per favore imposta uno username* ".format(name=update.message.from_user.name)
+        msg += "per facilitare le conversazioni future, grazie.\n\n"
+        update.message.reply_text(msg, parse_mode=telegram.ParseMode.MARKDOWN)
+    if 'voltaggio' in update.message.text.lower():
+        msg = "Il termine voltaggio, sebbene sia largamente utilizzato *è scorretto*. Ti vieto di utilizzarlo!"
+        update.message.reply_text(msg, parse_mode=telegram.ParseMode.MARKDOWN)
+        context.bot.send_photo(chat_id=update.message.chat_id, photo=open('./resources/voltaggio.png', 'rb'))
+
+
+def rm(update, context):
+    """
+    'rm' remove messages
+    * warn users without username
+    * warn users using incorrect terminology
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+
+    text = update.message.text.split()
+    if len(text) > 1:
+        n_msg = int(text[1])
+        n_msg = int(text[1])
+        id_msg = range(update.message.reply_to_message.message_id - n_msg + 1,update.message.reply_to_message.message_id + 1)
+
+        for k in id_msg:
+            context.bot.delete_message(chat_id=update.message.chat_id, message_id=k)
+    else:
+        context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.reply_to_message.message_id)   
+
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
 
 # bot - main
 # ==========
@@ -303,6 +347,10 @@ def main():
     dispatcher.add_handler(add_group_handle)
     updater.dispatcher.add_handler(CallbackQueryHandler(answer_check))
 
+    # check_text
+    check_text_handle = MessageHandler(Filters.text, check_text)
+    dispatcher.add_handler(check_text_handle)
+
     # /send handler
     send_handler = CommandHandler('send', send)
     dispatcher.add_handler(send_handler)
@@ -312,8 +360,12 @@ def main():
     dispatcher.add_handler(kick_handler)
 
     # /ban handler
-    ban_handler = CommandHandler('kick', ban)
-    dispatcher.add_handler(kick_handler)
+    ban_handler = CommandHandler('ban', ban)
+    dispatcher.add_handler(ban_handler)
+
+    # /rm handler
+    rm_handler = CommandHandler('rm', rm)
+    dispatcher.add_handler(rm_handler)
 
     # start the BOT
     updater.start_polling()
