@@ -2,6 +2,7 @@
 # =======
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 import telegram as telegram
+import datetime
 
 # other modules
 # ------------ 
@@ -111,7 +112,6 @@ def start(update, context):
     context.bot.send_message(chat_id=update.message.chat_id,
                      text=msg,
                      parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
-    fid.close()
 
 
 def help(update, context):
@@ -285,12 +285,11 @@ def check_text(update, context):
         update.message.reply_text(msg, parse_mode=telegram.ParseMode.MARKDOWN)
         context.bot.send_photo(chat_id=update.message.chat_id, photo=open('./resources/voltaggio.png', 'rb'))
 
-
+@restricted
 def rm(update, context):
     """
     'rm' remove messages
-    * warn users without username
-    * warn users using incorrect terminology
+    usage: /rm or /rm number_of_messages
 
     :param update: bot update
     :param context: CallbackContext
@@ -310,6 +309,54 @@ def rm(update, context):
 
     # remove command
     context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
+
+def esame(update, context):
+    """
+    'esame' gives information about the exam
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+
+    msg = "L'esme è composto da:\n \* prova scritta (obbligatoria)\n \* prova orale obbligatoria\n\n"
+    msg += "tutti i dettagli a questo [link](https://didattica.polito.it/pls/portal30/gap.pkg_guide.viewGap?p_cod_ins=01JWDMN&p_a_acc=2020&p_header=S&p_lang=IT)"
+
+    context.bot.send_message(chat_id=update.message.chat_id,
+                     text=msg,
+                     parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
+
+
+def orario(update, context):
+    """
+    'orario' send timetable
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+
+    msg = "A questo link trovi il calendario: [link](https://calendar.google.com/calendar/embed?src=22m0uulcsk95n1nf22o3s7mt3g%40group.calendar.google.com&ctz=Europe%2FRome)"
+
+    context.bot.send_message(chat_id=update.message.chat_id,
+                     text=msg,
+                     parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
+
+
+@restricted
+def rm_inactive(update, context):
+    """
+    'rm_inactive' remove inactive users
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    for member in context.chat_data:
+        context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=member)
+        context.bot.unbanChatMember(chat_id=update.message.chat_id, user_id=member)
+
 
 # bot - main
 # ==========
@@ -366,6 +413,18 @@ def main():
     # /rm handler
     rm_handler = CommandHandler('rm', rm)
     dispatcher.add_handler(rm_handler)
+
+    # /esame handler
+    esame_handler = CommandHandler('esame', esame)
+    dispatcher.add_handler(esame_handler)
+
+    # /orario handler
+    orario_handler = CommandHandler('orario', orario)
+    dispatcher.add_handler(orario_handler)
+
+    # /rm_inactive handler
+    rm_inactive_handler = CommandHandler('rm_inactive', rm_inactive)
+    dispatcher.add_handler(rm_inactive_handler)
 
     # start the BOT
     updater.start_polling()
