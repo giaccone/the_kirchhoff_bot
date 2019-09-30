@@ -59,6 +59,18 @@ right_answer = {0:"volt (V)",
                 9:"Hz"}
 
 
+# common permissions
+# ------------------
+standard_permissions = {'can_send_messages':True,
+    'can_send_media_messages':True,
+    'can_send_polls':True,
+    'can_send_other_messages':True,
+    'can_add_web_page_previews':True,
+    'can_change_info':False,
+    'can_invite_users':False,
+    'can_pin_messages':False}
+
+
 # admin list
 # ----------
 fid = open('./admin_only/admin_list.txt', 'r')
@@ -158,6 +170,8 @@ def welcome_message(update, context):
 
         # update chat_data with the used_id and the index of its question
         context.chat_data[member.id] = randrange(len(question))
+        # remove permissions
+        context.bot.restrictChatMember(chat_id=update.message.chat_id, user_id=member.id, can_send_messages=False)
 
     # send the question
     question_text = "{name}\n".format(name=member.name) + question[context.chat_data[member.id]]
@@ -182,7 +196,8 @@ def answer_check(update, context):
     # check if the user is in chat_data (i.e. he is expected to answer)
     if query.from_user.id in context.chat_data:
         # check if user is answering to his own question
-        if query.message.reply_markup.inline_keyboard == answer[context.chat_data[query.from_user.id]]:
+        idx = query.message.text.index("\n") + 1
+        if query.message.text[idx:] == question[context.chat_data[query.from_user.id]]:
             
             # send selected answer
             context.bot.edit_message_text(text="Hai hai scelto: {}".format(query.data),
@@ -191,7 +206,10 @@ def answer_check(update, context):
             
             # check correctness
             if query.data == right_answer[context.chat_data[query.from_user.id]]:
-                context.bot.send_message(chat_id=query.message.chat_id, text="Risposta corretta! Buona permanenza nel gruppo!")
+                context.bot.send_message(chat_id=query.message.chat_id,
+                    text="Risposta corretta {username}! Buona permanenza nel gruppo!".format(username=query.from_user.name))
+                # restore standard permissions
+                context.bot.restrictChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id, **standard_permissions)
             else:
                 msg = "Risposta errata! Entro 15 secondi sarai rimosso dal gruppo.\n"
                 msg +="Rientra quando vuoi ma dovrai rispondere correttamente per poter rimanere."
@@ -205,11 +223,11 @@ def answer_check(update, context):
             del context.chat_data[query.from_user.id]
 
         else:
-            msg = "@{username} questa non è la tua domanda.".format(username=query.from_user.name)
+            msg = "{username} questa non è la tua domanda.".format(username=query.from_user.name)
             context.bot.send_message(chat_id=query.message.chat_id, text=msg)
     
     else:
-        msg = "@{username} tu hai già risposto.".format(username=query.from_user.name)
+        msg = "{username} tu hai già risposto.".format(username=query.from_user.name)
         context.bot.send_message(chat_id=query.message.chat_id, text=msg)
 
 
