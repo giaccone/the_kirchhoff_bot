@@ -438,6 +438,9 @@ def end(update, context):
     """
     context.bot.stop_poll(chat_id=update.message.chat_id, message_id=update.message.reply_to_message.message_id)
 
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
 
 @restricted
 def job_list(update, context):
@@ -450,7 +453,7 @@ def job_list(update, context):
     """
     msg = ""
     for k, j in enumerate(context.job_queue.jobs()):
-        msg += "job {}: {}\n".format(k, j.name)
+        msg += "job {}: {} , removed={}\n".format(k, j.name, j.removed)
 
     for adm in LIST_OF_ADMINS:
         chat_id = int(adm)
@@ -458,7 +461,26 @@ def job_list(update, context):
             context.bot.send_message(chat_id=chat_id, text=msg)
         except telegram.error.TelegramError:
             pass
+    
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
 
+
+@restricted
+def job_stop(update, context):
+    """
+    'job_stop' stops a job
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    jobs = update.message.text.replace("/job_stop","")
+    jobs = jobs.split(";")
+    for jname in jobs:
+        j = context.job_queue.get_jobs_by_name(jname.strip())
+        for ele in j:
+            ele.schedule_removal()
 
 # bot - main
 # ==========
@@ -543,6 +565,10 @@ def main():
     # /job_list handler
     job_list_handler = CommandHandler('job_list', job_list)
     dispatcher.add_handler(job_list_handler)
+
+    # /job_stop handler
+    job_stop_handler = CommandHandler('job_stop', job_stop)
+    dispatcher.add_handler(job_stop_handler)
 
     # start the BOT
     updater.start_polling()
