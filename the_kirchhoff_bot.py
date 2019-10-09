@@ -316,17 +316,24 @@ def rm(update, context):
 
     text = update.message.text.split()
     if len(text) > 1:
-        n_msg = int(text[1])
-        n_msg = int(text[1])
-        id_msg = range(update.message.reply_to_message.message_id - n_msg + 1,update.message.reply_to_message.message_id + 1)
+        n_msg = int(text[1]) + 1
+        first_id = update.message.message_id
+        k = 0
+        c = 0
 
-        for k in id_msg:
-            context.bot.delete_message(chat_id=update.message.chat_id, message_id=k)
+        while k <= n_msg:
+            del_id = first_id - k - c
+            
+            try:
+                context.bot.delete_message(chat_id=update.message.chat_id, message_id=del_id)
+                k += 1
+            except telegram.error.TelegramError:
+                c += 1
+
     else:
         context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.reply_to_message.message_id)   
-
-    # remove command
-    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+        # remove command
+        context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
 
 
 def esame(update, context):
@@ -338,12 +345,27 @@ def esame(update, context):
     :return: None
     """
 
-    msg = "L'esme è composto da:\n \* prova scritta (obbligatoria)\n \* prova orale obbligatoria\n\n"
-    msg += "tutti i dettagli a questo [link](https://didattica.polito.it/pls/portal30/gap.pkg_guide.viewGap?p_cod_ins=01JWDMN&p_a_acc=2020&p_header=S&p_lang=IT)"
+    # all messages generated here will be deleted after the delay_time
+    delay_time = 30 # sec
 
-    context.bot.send_message(chat_id=update.message.chat_id,
+    # set message
+    msg = "Buongiorno {}\n".format(update.message.from_user.name)
+    msg = msg.replace("_","\_")
+    msg += "L'esme è composto da:\n \* prova scritta (obbligatoria)\n \* prova orale obbligatoria\n\n"
+    msg += "tutti i dettagli a questo [link](https://didattica.polito.it/pls/portal30/gap.pkg_guide.viewGap?p_cod_ins=01JWDMN&p_a_acc=2020&p_header=S&p_lang=IT)"
+    msg += "\n\nQuesto messaggio si \nautodistruggerà tra {} secondi (salvati il link)".format(delay_time)
+
+    # send message
+    sent_msg = context.bot.send_message(chat_id=update.message.chat_id,
                      text=msg,
                      parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
+    
+    # clean chat deleting the message after 30 sec
+    def delayed_delete(context, message_id=[sent_msg.message_id, update.message.message_id]):
+        
+        for msg_id in message_id:
+            context.bot.delete_message(chat_id=update.message.chat_id, message_id=msg_id)
+    context.job_queue.run_once(delayed_delete, delay_time)
 
 
 def orario(update, context):
@@ -354,13 +376,27 @@ def orario(update, context):
     :param context: CallbackContext
     :return: None
     """
+    # all messages generated here will be deleted after the delay_time
+    delay_time = 30 # sec
 
-    msg = "A questo link trovi il calendario: [link](https://calendar.google.com/calendar/embed?src=22m0uulcsk95n1nf22o3s7mt3g%40group.calendar.google.com&ctz=Europe%2FRome)"
+    # set message
+    msg = "Buongiorno {}\n".format(update.message.from_user.name)
+    msg = msg.replace("_","\_")
+    msg +="A questo link trovi il calendario: [link](https://calendar.google.com/calendar/embed?src=22m0uulcsk95n1nf22o3s7mt3g%40group.calendar.google.com&ctz=Europe%2FRome)\n"
+    msg +="\nQuesto messaggio si autodistruggerà tra {} secondi (salvati il link)".format(delay_time)
 
-    context.bot.send_message(chat_id=update.message.chat_id,
+    # send message
+    sent_msg = context.bot.send_message(chat_id=update.message.chat_id,
                      text=msg,
                      parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
+    # clean chat deleting the message after 30 sec
+    def delayed_delete(context, message_id=[sent_msg.message_id, update.message.message_id]):
+        
+        for msg_id in message_id:
+            context.bot.delete_message(chat_id=update.message.chat_id, message_id=msg_id)
+    context.job_queue.run_once(delayed_delete, delay_time)
+    
 
 @restricted
 def rm_inactive(update, context):
