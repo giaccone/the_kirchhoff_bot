@@ -411,6 +411,112 @@ def rm_inactive(update, context):
         context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=member)
         context.bot.unbanChatMember(chat_id=update.message.chat_id, user_id=member)
 
+@restricted
+def poll(update, context):
+    """
+    'poll' create a new poll
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    msg = update.message.text.replace('/poll ','').split(";")
+    question = msg[0]
+    options = msg[1:]
+    context.bot.send_poll(chat_id=update.message.chat_id,
+                     question=question,
+                     options=options,
+                     disable_notification=False)
+
+    
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
+
+@restricted
+def spoll(update, context):
+    """
+    'spoll' schedule a new poll
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    poll_data, date_name = update.message.text.split('_end_')
+    date, name = date_name.split('_name_')
+    msg = poll_data.replace('/spoll ','').split(";")
+    date = [int(k) for k in date.split(";")]
+    
+    question = msg[0]
+    options = msg[1:]
+    def poll_now(context, update=update):
+        context.bot.send_poll(chat_id=update.message.chat_id,
+                        question=question,
+                        options=options,
+                        disable_notification=False)
+    
+    time = datetime.datetime(date[0], date[1], date[2], date[3], date[4], 0, 0)
+    context.job_queue.run_once(poll_now, time, name=name)
+
+    
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
+
+@restricted
+def end(update, context):
+    """
+    'end' close an existing poll
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    context.bot.stop_poll(chat_id=update.message.chat_id, message_id=update.message.reply_to_message.message_id)
+
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
+
+@restricted
+def job_list(update, context):
+    """
+    'job_list' send a job list to the admin
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    msg = ""
+    for k, j in enumerate(context.job_queue.jobs()):
+        msg += "job {}: {} , removed={}\n".format(k, j.name, j.removed)
+
+    for adm in LIST_OF_ADMINS:
+        chat_id = int(adm)
+        try:
+            context.bot.send_message(chat_id=chat_id, text=msg)
+        except telegram.error.TelegramError:
+            pass
+    
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
+
+@restricted
+def job_stop(update, context):
+    """
+    'job_stop' stops a job
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    jobs = update.message.text.replace("/job_stop","")
+    jobs = jobs.split(";")
+    for jname in jobs:
+        j = context.job_queue.get_jobs_by_name(jname.strip())
+        for ele in j:
+            ele.schedule_removal()
 
 # bot - main
 # ==========
@@ -479,6 +585,26 @@ def main():
     # /rm_inactive handler
     rm_inactive_handler = CommandHandler('rm_inactive', rm_inactive)
     dispatcher.add_handler(rm_inactive_handler)
+
+    # /poll handler
+    poll_handler = CommandHandler('poll', poll)
+    dispatcher.add_handler(poll_handler)
+
+    # /spoll handler
+    spoll_handler = CommandHandler('spoll', spoll)
+    dispatcher.add_handler(spoll_handler)
+
+    # /cpoll handler
+    end_handler = CommandHandler('end', end)
+    dispatcher.add_handler(end_handler)
+
+    # /job_list handler
+    job_list_handler = CommandHandler('job_list', job_list)
+    dispatcher.add_handler(job_list_handler)
+
+    # /job_stop handler
+    job_stop_handler = CommandHandler('job_stop', job_stop)
+    dispatcher.add_handler(job_stop_handler)
 
     # start the BOT
     updater.start_polling()
