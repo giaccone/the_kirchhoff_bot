@@ -61,14 +61,15 @@ right_answer = {0:"volt (V)",
 
 # common permissions
 # ------------------
-standard_permissions = {'can_send_messages':True,
-    'can_send_media_messages':True,
-    'can_send_polls':True,
-    'can_send_other_messages':True,
-    'can_add_web_page_previews':True,
-    'can_change_info':False,
-    'can_invite_users':False,
-    'can_pin_messages':False}
+initial_permission = telegram.ChatPermissions(can_send_messages=False)
+standard_permissions = telegram.ChatPermissions(can_send_messages=True,
+                can_send_media_messages=True,
+                can_send_polls=True,
+                can_send_other_messages=True,
+                can_add_web_page_previews=True,
+                can_change_info=False,
+                can_invite_users=False,
+                can_pin_messages=False)
 
 
 # admin list
@@ -171,7 +172,8 @@ def welcome_message(update, context):
         # update chat_data with the used_id and the index of its question
         context.chat_data[member.id] = randrange(len(question))
         # remove permissions
-        context.bot.restrictChatMember(chat_id=update.message.chat_id, user_id=member.id, can_send_messages=False)
+        context.bot.restrictChatMember(chat_id=update.message.chat_id, user_id=member.id, permissions=initial_permission)
+        
 
     # send the question
     question_text = "{name}\n".format(name=member.name) + question[context.chat_data[member.id]]
@@ -209,7 +211,7 @@ def answer_check(update, context):
                 context.bot.send_message(chat_id=query.message.chat_id,
                     text="Risposta corretta {username}! Buona permanenza nel gruppo!".format(username=query.from_user.name))
                 # restore standard permissions
-                context.bot.restrictChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id, **standard_permissions)
+                context.bot.restrictChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id, permissions=standard_permissions)
             else:
                 msg = "Risposta errata! Entro 15 secondi sarai rimosso dal gruppo.\n"
                 msg +="Rientra quando vuoi ma dovrai rispondere correttamente per poter rimanere."
