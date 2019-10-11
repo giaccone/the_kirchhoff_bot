@@ -452,10 +452,13 @@ def spoll(update, context):
     question = msg[0]
     options = msg[1:]
     def poll_now(context, update=update):
-        context.bot.send_poll(chat_id=update.message.chat_id,
+        msg_poll = context.bot.send_poll(chat_id=update.message.chat_id,
                         question=question,
                         options=options,
                         disable_notification=False)
+        
+        context.bot.pin_chat_message(chat_id=update.message.chat_id, message_id=msg_poll.message_id, disable_notification=False)
+        
     
     time = datetime.datetime(date[0], date[1], date[2], date[3], date[4], 0, 0)
     context.job_queue.run_once(poll_now, time, name=name)
@@ -519,6 +522,24 @@ def job_stop(update, context):
         j = context.job_queue.get_jobs_by_name(jname.strip())
         for ele in j:
             ele.schedule_removal()
+
+
+@restricted
+def pin(update, context):
+    """
+    'pin' a message
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+
+    # pin message
+    context.bot.pin_chat_message(chat_id=update.message.chat_id, message_id=update.message.reply_to_message.message_id, disable_notification=False)  
+
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
 
 # bot - main
 # ==========
@@ -607,6 +628,10 @@ def main():
     # /job_stop handler
     job_stop_handler = CommandHandler('job_stop', job_stop)
     dispatcher.add_handler(job_stop_handler)
+
+    # /pin handler
+    pin_handler = CommandHandler('pin', pin)
+    dispatcher.add_handler(pin_handler)
 
     # start the BOT
     updater.start_polling()
