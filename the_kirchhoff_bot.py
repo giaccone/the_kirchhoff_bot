@@ -527,7 +527,7 @@ def job_stop(update, context):
 @restricted
 def pin(update, context):
     """
-    'pin' a message
+    'pin' pin a message
 
     :param update: bot update
     :param context: CallbackContext
@@ -537,6 +537,24 @@ def pin(update, context):
     # pin message
     context.bot.pin_chat_message(chat_id=update.message.chat_id, message_id=update.message.reply_to_message.message_id, disable_notification=False)  
 
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
+
+@restricted
+def send_file(update, context):
+    """
+    'send' send a file
+
+    :param update: bot update
+    :param context: CallbackContext
+    :return: None
+    """
+    filename = update.message.text.replace("/send_file","")
+    filename = filename.strip()
+
+    # send file
+    context.bot.send_document(chat_id=update.message.chat_id, document=open('resources/' + filename, 'rb'))
     # remove command
     context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
 
@@ -632,6 +650,10 @@ def main():
     # /pin handler
     pin_handler = CommandHandler('pin', pin)
     dispatcher.add_handler(pin_handler)
+
+    # /pin handler
+    send_file_handler = CommandHandler('send_file', send_file)
+    dispatcher.add_handler(send_file_handler)
 
     # start the BOT
     updater.start_polling()
