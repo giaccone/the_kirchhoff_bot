@@ -590,15 +590,6 @@ def main():
     help_handler = CommandHandler('help', help)
     dispatcher.add_handler(help_handler)
 
-    # welcome message
-    add_group_handle = MessageHandler(Filters.status_update.new_chat_members, welcome_message)
-    dispatcher.add_handler(add_group_handle)
-    updater.dispatcher.add_handler(CallbackQueryHandler(answer_check))
-
-    # check_text
-    check_text_handle = MessageHandler(Filters.text, check_text)
-    dispatcher.add_handler(check_text_handle)
-
     # /send handler
     send_handler = CommandHandler('send', send)
     dispatcher.add_handler(send_handler)
@@ -654,6 +645,15 @@ def main():
     # /pin handler
     send_file_handler = CommandHandler('send_file', send_file)
     dispatcher.add_handler(send_file_handler)
+    
+    # welcome message
+    add_group_handle = MessageHandler(Filters.status_update.new_chat_members, welcome_message)
+    dispatcher.add_handler(add_group_handle)
+    updater.dispatcher.add_handler(CallbackQueryHandler(answer_check))
+
+    # check_text
+    check_text_handle = MessageHandler(Filters.text, check_text)
+    dispatcher.add_handler(check_text_handle)
 
     # start the BOT
     updater.start_polling()
