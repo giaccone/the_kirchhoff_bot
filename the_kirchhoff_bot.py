@@ -36,7 +36,12 @@ question = {0:"Qual'è l'unità di misura della tensione elettrica?",
             6:"Quanto vale il valor medio di sin(x) calcolato su un periodo?",
             7:"Qual'è l'unità di misura del campo elettrico?",
             8:"Qual'è l'unità di misura del campo magnetico?",
-            9:"Qual'è l'unità di misura della frequenza?"}
+            9:"Qual'è l'unità di misura della frequenza?",
+            10:"Come si calcola l'energia cinetica?",
+            11:"Se f è una funzione lineare ed f(x1) vale 5. Quanto vale f(5 x1)?",
+            12:"Sia f una funzione periodica. Il suo integrale su un periodo vale 10. Quanto vale l'integrale su tre periodi?",
+            13:"20°C, espressi in kelvin, sono pari a:",
+            14:"Durante la fase di evaporazione, la temperatura dell'acqua:"}
 answer = {0:generate_buttons(['metri (m)', 'joule (J)', 'volt (V)', 'newton (N)']),
           1:generate_buttons(['16', '5', '9', '25']),
           2:generate_buttons(['ampere (A)', 'watt (W)', 'Farad (F)', 'weber (Wb)']),
@@ -46,7 +51,12 @@ answer = {0:generate_buttons(['metri (m)', 'joule (J)', 'volt (V)', 'newton (N)'
           6:generate_buttons(['0', '1', 'infinito', '-1']),
           7:generate_buttons(['V', 'kg', 'm/V', 'V/m']),
           8:generate_buttons(['rad', 'A/m', 'm2', 'Hz']),
-          9:generate_buttons(['m', 'Wb', 'Hz', '°C'])}
+          9:generate_buttons(['m', 'Wb', 'Hz', '°C']),
+          10:generate_buttons(['mv', '0.5 m v^2', 'm g h', 'v^2/2']),
+          11:generate_buttons(['1', '5', '25', '0.5']),
+          12:generate_buttons(['10', '3.3', '15', '30']),
+          13:generate_buttons(['-273.15 K', '293.15 K','10000 K','-20 K']),
+          14:generate_buttons(['aumenta', 'è costante', 'diminuisce', 'vale 100 K'])}
 right_answer = {0:"volt (V)",
                 1:"5",
                 2:"ampere (A)",
@@ -56,7 +66,12 @@ right_answer = {0:"volt (V)",
                 6:"0",
                 7:"V/m",
                 8:"A/m",
-                9:"Hz"}
+                9:"Hz",
+                10:"0.5 m v^2",
+                11:"25",
+                12:"30",
+                13:"293.15 K",
+                14:"è costante"}
 
 
 # common permissions
@@ -354,7 +369,7 @@ def esame(update, context):
     msg = "Buongiorno {}\n".format(update.message.from_user.name)
     msg = msg.replace("_","\_")
     msg += "L'esme è composto da:\n \* prova scritta (obbligatoria)\n \* prova orale obbligatoria\n\n"
-    msg += "tutti i dettagli a questo [link](https://didattica.polito.it/pls/portal30/gap.pkg_guide.viewGap?p_cod_ins=01JWDMN&p_a_acc=2020&p_header=S&p_lang=IT)"
+    msg += "tutti i dettagli a questo [link](https://didattica.polito.it/pls/portal30/gap.pkg_guide.viewGap?p_cod_ins=17AULMK&p_a_acc=2021&p_header=S&p_lang=IT)"
     msg += "\n\nQuesto messaggio si \nautodistruggerà tra {} secondi (salvati il link)".format(delay_time)
 
     # send message
@@ -384,7 +399,7 @@ def orario(update, context):
     # set message
     msg = "Buongiorno {}\n".format(update.message.from_user.name)
     msg = msg.replace("_","\_")
-    msg +="A questo link trovi il calendario: [link](https://calendar.google.com/calendar/embed?src=22m0uulcsk95n1nf22o3s7mt3g%40group.calendar.google.com&ctz=Europe%2FRome)\n"
+    msg +="A questo link trovi il calendario: [link](https://calendar.google.com/calendar/embed?src=bruidppjtejeod2j352obpdc40%40group.calendar.google.com&ctz=Europe%2FRome)\n"
     msg +="\nQuesto messaggio si autodistruggerà tra {} secondi (salvati il link)".format(delay_time)
 
     # send message
