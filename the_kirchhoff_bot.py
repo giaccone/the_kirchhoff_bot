@@ -4,6 +4,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 import telegram as telegram
 import datetime
 from config import LIST_OF_ADMINS, TOKEN
+import commands as cmd
 
 # other modules
 # ------------ 
@@ -104,41 +105,6 @@ def restricted(func):
             return
         return func(update, context, *args, **kwargs)
     return wrapped
-
-
-def start(update, context):
-    """
-    'start' provides the start message
-
-    :param update: bot update
-    :param context: CallbackContext
-    :return: None
-    """
-    msg = "*Ciao*, sono @the\_kirchhoff\_bot \n\n"
-    msg += "Sono qui per aiutarti a gestire il tuo gruppo Telegram."
-
-    context.bot.send_message(chat_id=update.message.chat_id,
-                     text=msg,
-                     parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
-
-
-def help(update, context):
-    """
-    'help' provides information about the use of the bot
-
-    :param update: bot update
-    :param context: CallbackContext
-    :return: None
-    """
-    msg = "*Ciao*, sono @the\_kirchhoff\_bot .\n\n"
-    msg += "I miei comandi sono:\n"
-    msg += " \* /start\n"
-    msg += " \* /help\n"
-    msg += " \* /r (solo admin)\n"
-
-    context.bot.send_message(chat_id=update.message.chat_id,
-                     text=msg,
-                     parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
 def welcome_message(update, context):
@@ -578,11 +544,11 @@ def main():
     dispatcher.add_handler(CommandHandler('r', restart))
 
     # /start handler
-    start_handler = CommandHandler('start', start)
+    start_handler = CommandHandler('start', cmd.start.execute)
     dispatcher.add_handler(start_handler)
 
     # /help handler
-    help_handler = CommandHandler('help', help)
+    help_handler = CommandHandler('help', cmd.help.execute)
     dispatcher.add_handler(help_handler)
 
     # /send handler
