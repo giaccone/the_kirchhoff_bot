@@ -3,6 +3,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 import telegram as telegram
 import datetime
+from config import LIST_OF_ADMINS, TOKEN
 
 # other modules
 # ------------ 
@@ -85,27 +86,6 @@ standard_permissions = telegram.ChatPermissions(can_send_messages=True,
                 can_change_info=False,
                 can_invite_users=False,
                 can_pin_messages=False)
-
-
-# admin list
-# ----------
-fid = open('./admin_only/admin_list.txt', 'r')
-LIST_OF_ADMINS = [int(adm) for adm in fid.readline().split()]
-fid.close()
-
-
-# utility functions
-# -----------------
-def read_token(filename):
-    """
-    'read_token' reads the bot token from a text file.
-
-    :param filename: filename of the file including the token
-    :return: string with the token
-    """
-    with open(filename) as f:
-        token = f.readline().replace('\n', '')
-    return token
 
 
 def restricted(func):
@@ -579,7 +559,7 @@ def send_file(update, context):
 def main():
     # set TOKEN and initialization
     fname = './admin_only/the_kirchhoff_bot_token.txt'
-    updater = Updater(token=read_token(fname), use_context=True)
+    updater = Updater(token=TOKEN, use_context=True)
     dispatcher = updater.dispatcher
 
     # restart - restart the BOT
