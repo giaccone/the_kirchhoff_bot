@@ -176,58 +176,6 @@ def answer_check(update, context):
         context.bot.send_message(chat_id=query.message.chat_id, text=msg)
 
 
-@restricted
-def send(update, context):
-    """
-    'send' send a message in the group through the bot
-    usage: /send message of the text
-
-    :param update: bot update
-    :param context: CallbackContext
-    :return: None
-    """
-    msg = update.message.text.replace('/send ','').replace('\*','*'). replace('\_','_')
-    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
-    if update.message.reply_to_message is None:
-        context.bot.send_message(chat_id=update.message.chat_id,
-                                text=msg,
-                                parse_mode=telegram.ParseMode.MARKDOWN,
-                                disable_web_page_preview=True)
-    else:
-        context.bot.send_message(chat_id=update.message.chat_id,
-                                text=msg,
-                                parse_mode=telegram.ParseMode.MARKDOWN,
-                                disable_web_page_preview=True,
-                                reply_to_message_id=update.message.reply_to_message.message_id)
-
-
-@restricted
-def kick(update, context):
-    """
-    'kick' kick user out from the group
-
-    :param update: bot update
-    :param context: CallbackContext
-    :return: None
-    """
-    user_id = update.message.reply_to_message.from_user.id
-    context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=user_id)
-    context.bot.unbanChatMember(chat_id=update.message.chat_id, user_id=user_id)
-
-
-@restricted
-def ban(update, context):
-    """
-    'ban' ban user out from the group
-
-    :param update: bot update
-    :param context: CallbackContext
-    :return: None
-    """
-    user_id = update.message.reply_to_message.from_user.id
-    context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=user_id)
-
-
 def check_text(update, context):
     """
     'check_text' reply to selected text messages
@@ -248,113 +196,6 @@ def check_text(update, context):
         update.message.reply_text(msg, parse_mode=telegram.ParseMode.MARKDOWN)
         context.bot.send_photo(chat_id=update.message.chat_id, photo=open('./resources/voltaggio.png', 'rb'))
 
-@restricted
-def rm(update, context):
-    """
-    'rm' remove messages
-    usage: /rm or /rm number_of_messages
-
-    :param update: bot update
-    :param context: CallbackContext
-    :return: None
-    """
-
-    text = update.message.text.split()
-    if len(text) > 1:
-        n_msg = int(text[1]) + 1
-        first_id = update.message.message_id
-        k = 0
-        c = 0
-
-        while k <= n_msg:
-            del_id = first_id - k - c
-            
-            try:
-                context.bot.delete_message(chat_id=update.message.chat_id, message_id=del_id)
-                k += 1
-            except telegram.error.TelegramError:
-                c += 1
-
-    else:
-        context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.reply_to_message.message_id)   
-        # remove command
-        context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
-
-
-def esame(update, context):
-    """
-    'esame' gives information about the exam
-
-    :param update: bot update
-    :param context: CallbackContext
-    :return: None
-    """
-
-    # all messages generated here will be deleted after the delay_time
-    delay_time = 30 # sec
-
-    # set message
-    msg = "Buongiorno {}\n".format(update.message.from_user.name)
-    msg = msg.replace("_","\_")
-    msg += "L'esme è composto da:\n \* prova scritta (obbligatoria)\n \* prova orale obbligatoria\n\n"
-    msg += "tutti i dettagli a questo [link](https://didattica.polito.it/pls/portal30/gap.pkg_guide.viewGap?p_cod_ins=17AULMK&p_a_acc=2021&p_header=S&p_lang=IT)"
-    msg += "\n\nQuesto messaggio si \nautodistruggerà tra {} secondi (salvati il link)".format(delay_time)
-
-    # send message
-    sent_msg = context.bot.send_message(chat_id=update.message.chat_id,
-                     text=msg,
-                     parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
-    
-    # clean chat deleting the message after 30 sec
-    def delayed_delete(context, message_id=[sent_msg.message_id, update.message.message_id]):
-        
-        for msg_id in message_id:
-            context.bot.delete_message(chat_id=update.message.chat_id, message_id=msg_id)
-    context.job_queue.run_once(delayed_delete, delay_time)
-
-
-def orario(update, context):
-    """
-    'orario' send timetable
-
-    :param update: bot update
-    :param context: CallbackContext
-    :return: None
-    """
-    # all messages generated here will be deleted after the delay_time
-    delay_time = 30 # sec
-
-    # set message
-    msg = "Buongiorno {}\n".format(update.message.from_user.name)
-    msg = msg.replace("_","\_")
-    msg +="A questo link trovi il calendario: [link](https://calendar.google.com/calendar/embed?src=bruidppjtejeod2j352obpdc40%40group.calendar.google.com&ctz=Europe%2FRome)\n"
-    msg +="\nQuesto messaggio si autodistruggerà tra {} secondi (salvati il link)".format(delay_time)
-
-    # send message
-    sent_msg = context.bot.send_message(chat_id=update.message.chat_id,
-                     text=msg,
-                     parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=True)
-
-    # clean chat deleting the message after 30 sec
-    def delayed_delete(context, message_id=[sent_msg.message_id, update.message.message_id]):
-        
-        for msg_id in message_id:
-            context.bot.delete_message(chat_id=update.message.chat_id, message_id=msg_id)
-    context.job_queue.run_once(delayed_delete, delay_time)
-    
-
-@restricted
-def rm_inactive(update, context):
-    """
-    'rm_inactive' remove inactive users
-
-    :param update: bot update
-    :param context: CallbackContext
-    :return: None
-    """
-    for member in context.chat_data:
-        context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=member)
-        context.bot.unbanChatMember(chat_id=update.message.chat_id, user_id=member)
 
 @restricted
 def poll(update, context):
@@ -534,31 +375,23 @@ def main():
     dispatcher.add_handler(help_handler)
 
     # /send handler
-    send_handler = CommandHandler('send', send)
+    send_handler = CommandHandler('send', cmd.send.execute)
     dispatcher.add_handler(send_handler)
 
     # /kick handler
-    kick_handler = CommandHandler('kick', kick)
+    kick_handler = CommandHandler('kick', cmd.kick.execute)
     dispatcher.add_handler(kick_handler)
 
     # /ban handler
-    ban_handler = CommandHandler('ban', ban)
+    ban_handler = CommandHandler('ban', cmd.ban.execute)
     dispatcher.add_handler(ban_handler)
 
     # /rm handler
-    rm_handler = CommandHandler('rm', rm)
+    rm_handler = CommandHandler('rm', cmd.rm.execute)
     dispatcher.add_handler(rm_handler)
 
-    # /esame handler
-    esame_handler = CommandHandler('esame', esame)
-    dispatcher.add_handler(esame_handler)
-
-    # /orario handler
-    orario_handler = CommandHandler('orario', orario)
-    dispatcher.add_handler(orario_handler)
-
     # /rm_inactive handler
-    rm_inactive_handler = CommandHandler('rm_inactive', rm_inactive)
+    rm_inactive_handler = CommandHandler('rm_inactive', cmd.cg.execute)
     dispatcher.add_handler(rm_inactive_handler)
 
     # /poll handler
