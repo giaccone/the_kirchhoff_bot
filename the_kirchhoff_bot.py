@@ -5,10 +5,10 @@ import telegram as telegram
 import datetime
 from config import LIST_OF_ADMINS, TOKEN
 import commands as cmd
+from util.decorators import restricted
 
 # other modules
-# ------------ 
-from functools import wraps
+# ------------
 import logging
 from random import randrange
 
@@ -87,24 +87,6 @@ standard_permissions = telegram.ChatPermissions(can_send_messages=True,
                 can_change_info=False,
                 can_invite_users=False,
                 can_pin_messages=False)
-
-
-def restricted(func):
-    """
-    'restricted' decorates a function so that it can be used only to allowed users
-
-    :param func: function to be decorated
-    :return: function wrapper
-    """
-    @wraps(func)
-    def wrapped(update, context, *args, **kwargs):
-        user_id = update.effective_user.id
-        if user_id not in LIST_OF_ADMINS:
-            print("Unauthorized access denied for {}.".format(user_id))
-            context.bot.send_message(chat_id=update.message.chat_id, text="You are not authorized to run this command")
-            return
-        return func(update, context, *args, **kwargs)
-    return wrapped
 
 
 def welcome_message(update, context):
