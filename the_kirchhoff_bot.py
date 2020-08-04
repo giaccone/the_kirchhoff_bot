@@ -1,6 +1,7 @@
 # modules
 # =======
 import os
+import sys
 from threading import Thread
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 from config import TOKEN
@@ -15,7 +16,7 @@ import logging
 # set basic logging
 # -----------------
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                     level=logging.INFO)
+                    level=logging.INFO)
 
 
 # bot - main
