@@ -1,5 +1,7 @@
 # modules
 # =======
+import os
+from threading import Thread
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 from config import TOKEN
 import commands as cmd
