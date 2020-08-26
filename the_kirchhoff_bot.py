@@ -77,7 +77,7 @@ def main():
     spoll_handler = CommandHandler('spoll', cmd.spoll.execute)
     dispatcher.add_handler(spoll_handler)
 
-    # /cpoll handler
+    # /end handler
     end_handler = CommandHandler('end', cmd.end.execute)
     dispatcher.add_handler(end_handler)
 
@@ -86,7 +86,7 @@ def main():
     dispatcher.add_handler(job_list_handler)
 
     # /job_stop handler
-    job_stop_handler = CommandHandler('job_stop', cmd.job_stop)
+    job_stop_handler = CommandHandler('job_stop', cmd.job_stop.execute)
     dispatcher.add_handler(job_stop_handler)
 
     # /pin handler
