@@ -16,3 +16,6 @@ def execute(update, context):
         j = context.job_queue.get_jobs_by_name(jname.strip())
         for ele in j:
             ele.schedule_removal()
+
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
