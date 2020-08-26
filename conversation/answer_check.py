@@ -15,18 +15,16 @@ def execute(update, context):
     query = update.callback_query
 
     # check if the user is in chat_data (i.e. he is expected to answer)
-    if query.from_user.id in context.chat_data:
-        # check if user is answering to his own question
-        idx = query.message.text.index("\n") + 1
-        if query.message.text[idx:] == question[context.chat_data[query.from_user.id]]:
-
+    if query.from_user.id in context.user_data:
+        # check if the user is answering to his own question
+        if context.user_data[query.from_user.id] == context.chat_data[query.message.message_id]['question_key']:
             # send selected answer
             context.bot.edit_message_text(text="Hai hai scelto: {}".format(query.data),
                                           chat_id=query.message.chat_id,
                                           message_id=query.message.message_id)
 
             # check correctness
-            if query.data == right_answer[context.chat_data[query.from_user.id]]:
+            if query.data == right_answer[context.chat_data[query.message.message_id]['question_id']]:
                 context.bot.send_message(chat_id=query.message.chat_id,
                                          text="Risposta corretta {username}! Buona permanenza nel gruppo!".format(
                                              username=query.from_user.name))
@@ -45,7 +43,8 @@ def execute(update, context):
 
                 context.job_queue.run_once(delayed_kick, 15)
 
-            del context.chat_data[query.from_user.id]
+            del context.chat_data[query.message.message_id]
+            del context.user_data[query.from_user.id]
 
         else:
             msg = "{username} questa non è la tua domanda.".format(username=query.from_user.name)
