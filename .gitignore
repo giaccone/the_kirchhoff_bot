@@ -1,4 +1,4 @@
 .idea/
 admin_only/
 resources/*.pdf
-
+__pycache__
