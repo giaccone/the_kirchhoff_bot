@@ -14,23 +14,39 @@ def execute(update, context):
     if update.message.text.strip() == "/poll":
         msg = "These are examples of POLL. Use the command followed by any of these examples.\n\n"
         msg += "Regular - anonymous:\n"
-        msg += "--------------------\n"
-        msg += "#Q: How many hours in a year?\n"
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text=msg,
+                                 disable_web_page_preview=True)
+
+        msg = "#Q: How many hours in a year?\n"
         msg += "#O: 100\n"
         msg += "#O: 876\n"
         msg += "#O: 8760\n"
         msg += "#O: 87600\n\n"
-        msg += "Regular - not anonymous:\n"
-        msg += "--------------------\n"
-        msg += "#Q: How many hours in a year?\n"
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text=msg,
+                                 disable_web_page_preview=True)
+
+        msg = "Regular - not anonymous:\n"
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text=msg,
+                                 disable_web_page_preview=True)
+
+        msg = "#Q: How many hours in a year?\n"
         msg += "#O: 100\n"
         msg += "#O: 876\n"
         msg += "#O: 8760\n"
         msg += "#O: 87600\n"
         msg += "#A: 0\n\n"
-        msg += "Quiz - anonymous:\n"
-        msg += "-----------------\n"
-        msg += "#Q: How many hours in a year?\n"
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text=msg,
+                                 disable_web_page_preview=True)
+
+        msg = "Quiz - anonymous:\n"
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text=msg,
+                                 disable_web_page_preview=True)
+        msg = "#Q: How many hours in a year?\n"
         msg += "#O: 100\n"
         msg += "#O: 876\n"
         msg += "#O: 8760\n"
