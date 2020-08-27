@@ -3,6 +3,7 @@ from util.permission import initial_permission
 from random import randrange
 from util.question_database import question, answer
 import uuid
+import time
 
 
 def execute(update, context):
@@ -40,12 +41,15 @@ def execute(update, context):
         question_text = "{name}\n".format(name=member.name) + question[question_id]
         possible_answers = answer[question_id]
         reply_markup = InlineKeyboardMarkup(possible_answers)
+        time.sleep(0.5)
         context.bot.send_message(chat_id=update.message.chat_id, text=question_text, reply_markup=reply_markup)
 
-        # bond question to user
+        # generate a random key
         key = str(uuid.uuid4())
+        # get the message_id of the InlineKeyboardMarkup
         message_id = update.message.message_id + 2
-        context.chat_data[update.message.message_id + 2] = dict()
-        context.chat_data[update.message.message_id + 2]['question_key'] = key
-        context.chat_data[update.message.message_id + 2]['question_id'] = question_id
+        # bind InlineKeyboard to user by means of chat_data and user_data
+        context.chat_data[message_id] = dict()
+        context.chat_data[message_id]['question_key'] = key
+        context.chat_data[message_id]['question_id'] = question_id
         context.user_data[member.id] = key

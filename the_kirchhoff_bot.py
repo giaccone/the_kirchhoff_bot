@@ -100,7 +100,9 @@ def main():
     # welcome
     add_group_handle = MessageHandler(Filters.status_update.new_chat_members, cnv.welcome.execute)
     dispatcher.add_handler(add_group_handle)
-    updater.dispatcher.add_handler(CallbackQueryHandler(cnv.answer_check.execute))
+
+    # query reaction for inline buttons
+    updater.dispatcher.add_handler(CallbackQueryHandler(cnv.query_reaction.execute))
 
     # check_text
     check_text_handle = MessageHandler(Filters.text, cnv.check_text.execute)
