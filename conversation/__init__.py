@@ -1,3 +1,3 @@
-__all__ = ["check_text", "welcome", "answer_check"]
+__all__ = ["check_text", "welcome", "query_reaction"]
 
 from conversation import *
