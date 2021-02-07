@@ -36,25 +36,50 @@ def execute(update, context):
         # check if the user is answering to his own question
         if context.user_data[query.from_user.id] == context.chat_data[query.message.message_id]['question_key']:
             # send selected answer
-            context.bot.edit_message_text(text="Hai hai scelto: {}".format(query.data),
+            msg1 = context.bot.edit_message_text(text="Hai hai scelto: {}".format(query.data),
                                           chat_id=query.message.chat_id,
                                           message_id=query.message.message_id)
 
             # check correctness
             if query.data == right_answer[context.chat_data[query.message.message_id]['question_id']]:
-                context.bot.send_message(chat_id=query.message.chat_id,
+                msg2 = context.bot.send_message(chat_id=query.message.chat_id,
                                          text="Risposta corretta {username}! Buona permanenza nel gruppo!".format(
                                              username=query.from_user.name))
                 # restore standard permissions
                 context.bot.restrictChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id,
                                                permissions=standard_permissions)
+                
+                # delete history
+                context.bot.delete_message(chat_id=query.message.chat_id,
+                                           message_id=context.chat_data[query.message.message_id]['to_be_deleted'][0])
+                context.bot.delete_message(chat_id=query.message.chat_id,
+                                           message_id=context.chat_data[query.message.message_id]['to_be_deleted'][1])
+                
+                # clean chat after 15 sec
+                def delayed_rm(context, query=query):
+                    context.bot.delete_message(chat_id=query.message.chat_id,
+                                           message_id=msg1.message_id)
+                    context.bot.delete_message(chat_id=query.message.chat_id,
+                                           message_id=msg2.message_id)
+                
+                context.job_queue.run_once(delayed_rm, 15)
+                
+
             else:
                 msg = "Risposta errata! Entro 15 secondi sarai rimosso dal gruppo.\n"
                 msg += "Rientra quando vuoi ma dovrai rispondere correttamente per poter rimanere."
-                context.bot.send_message(chat_id=query.message.chat_id, text=msg)
+                msg = context.bot.send_message(chat_id=query.message.chat_id, text=msg)
 
-                # kick the user after a given delay
+                # delete history
+                context.bot.delete_message(chat_id=query.message.chat_id,
+                                           message_id=context.chat_data[query.message.message_id]['to_be_deleted'][0])
+                context.bot.delete_message(chat_id=query.message.chat_id,
+                                           message_id=context.chat_data[query.message.message_id]['to_be_deleted'][1])
+
+                # kick the user after a given delay and clean the chat
                 def delayed_kick(context, query=query):
+                    context.bot.delete_message(chat_id=query.message.chat_id,
+                                           message_id=msg.message_id)
                     context.bot.kickChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id)
                     context.bot.unbanChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id)
 
@@ -65,8 +90,22 @@ def execute(update, context):
 
         else:
             msg = "{username} questa non è la tua domanda.".format(username=query.from_user.name)
-            context.bot.send_message(chat_id=query.message.chat_id, text=msg)
+            msg = context.bot.send_message(chat_id=query.message.chat_id, text=msg)
+
+            # clean chat after 15 sec
+            def delayed_rm(context, query=query):
+                context.bot.delete_message(chat_id=query.message.chat_id,
+                                        message_id=msg.message_id)
+                
+            context.job_queue.run_once(delayed_rm, 15)
 
     else:
         msg = "{username} tu hai già risposto.".format(username=query.from_user.name)
-        context.bot.send_message(chat_id=query.message.chat_id, text=msg)
+        msg = context.bot.send_message(chat_id=query.message.chat_id, text=msg)
+
+        # clean chat after 15 sec
+        def delayed_rm(context, query=query):
+            context.bot.delete_message(chat_id=query.message.chat_id,
+                                    message_id=msg.message_id)
+    
+        context.job_queue.run_once(delayed_rm, 15)

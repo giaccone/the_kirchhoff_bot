@@ -52,4 +52,5 @@ def execute(update, context):
         context.chat_data[message_id] = dict()
         context.chat_data[message_id]['question_key'] = key
         context.chat_data[message_id]['question_id'] = question_id
+        context.chat_data[message_id]['to_be_deleted'] = [update.message.message_id, update.message.message_id + 1]
         context.user_data[member.id] = key
