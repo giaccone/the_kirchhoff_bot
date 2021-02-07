@@ -12,3 +12,6 @@ def execute(update, context):
     """
     user_id = update.message.reply_to_message.from_user.id
     context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=user_id)
+
+    # remove command
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
