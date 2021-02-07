@@ -26,7 +26,7 @@ def execute(update, context):
             msg = "*primo avviso* (di 3)\n"
             msg += "\n\nCiao {name}.\n*Per favore imposta uno username* ".format(name=update.message.from_user.name)
             msg += "per facilitare le conversazioni future, grazie.\n\n"
-            msg += "Cerca su Google come fare o clicca qui --> [link](https://bfy.tw/OtDz)".format(
+            msg += "Cerca su Google come fare o clicca qui --> [link](https://letmegooglethat.com/?q=impostare+telegram+username)".format(
                 name=update.message.from_user.name)
             update.message.reply_text(msg, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
             # update number of warnings
@@ -36,7 +36,7 @@ def execute(update, context):
             msg = "*secondo avviso* (di 3)\n"
             msg += "\n\nCiao {name}.\n*Per favore imposta uno username* ".format(name=update.message.from_user.name)
             msg += "per facilitare le conversazioni future, grazie.\n\n"
-            msg += "Cerca su Google come fare o clicca qui --> [link](https://bfy.tw/OtDz)".format(
+            msg += "Cerca su Google come fare o clicca qui --> [link](https://letmegooglethat.com/?q=impostare+telegram+username)".format(
                 name=update.message.from_user.name)
             update.message.reply_text(msg, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
             # update number of warnings
@@ -45,7 +45,7 @@ def execute(update, context):
         elif context.chat_data[update.message.from_user.id] == 2:
             msg = "*terzo e ultimo avviso*\n"
             msg += "Se non imposti uno username al tuo prossimo messaggio ti saranno revocati i permessi di scrivere nel gruppo.\n\n"
-            msg += "Cerca su Google come fare o clicca qui --> [link](https://bfy.tw/OtDz)".format(name=update.message.from_user.name)
+            msg += "Cerca su Google come fare o clicca qui --> [link](https://letmegooglethat.com/?q=impostare+telegram+username)".format(name=update.message.from_user.name)
             update.message.reply_text(msg, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
             # update number of warnings
             context.chat_data[update.message.from_user.id] = 3
@@ -60,7 +60,7 @@ def execute(update, context):
             reply_markup = InlineKeyboardMarkup(buttons)
             msg = "D'ora in poi non puoi più scrivere messaggi. Verrai nuovamente abilitato"
             msg += " solo dopo aver impostato uno username\n\n"
-            msg += "Cerca su Google come fare o clicca qui --> [link](https://bfy.tw/OtDz)".format(name=update.message.from_user.name)
+            msg += "Cerca su Google come fare o clicca qui --> [link](https://letmegooglethat.com/?q=impostare+telegram+username)".format(name=update.message.from_user.name)
             msg += "\n\nQuando lo hai fatto premi il pulsante seguente:"
             time.sleep(0.5)
             context.bot.send_message(chat_id=update.message.chat_id, text=msg,
