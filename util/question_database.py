@@ -22,7 +22,12 @@ question = {0:"Qual'è l'unità di misura della tensione elettrica?",
             11:"Se f è una funzione lineare ed f(x1) vale 5. Quanto vale f(5 x1)?",
             12:"Sia f una funzione periodica. Il suo integrale su un periodo vale 10. Quanto vale l'integrale su tre periodi?",
             13:"20°C, espressi in kelvin, sono pari a:",
-            14:"Durante la fase di evaporazione, la temperatura dell'acqua:"}
+            14:"Durante la fase di evaporazione, la temperatura dell'acqua:",
+            15:"Il numero complesso 5-i3 in quale quadrante si trova?",
+            16:"Il numero complesso -5-i5 ha fase pari a:",
+            17:"Due vettori hannno modulo pari a 5 e sono sfasati di 180 gradi. Il modulo della loro somma vale:",
+            18:"Due vettori hannno modulo pari a 5 e sono sfasati di 90 gradi. Il modulo della loro somma vale:",
+            19:"Un corpo solido ha un peso di 9810 N. Quanto vale, approssimativamente, la sua massa?"}
 answer = {0:generate_buttons(['metri (m)', 'joule (J)', 'volt (V)', 'newton (N)']),
           1:generate_buttons(['16', '5', '9', '25']),
           2:generate_buttons(['ampere (A)', 'watt (W)', 'Farad (F)', 'weber (Wb)']),
@@ -37,7 +42,12 @@ answer = {0:generate_buttons(['metri (m)', 'joule (J)', 'volt (V)', 'newton (N)'
           11:generate_buttons(['1', '5', '25', '0.5']),
           12:generate_buttons(['10', '3.3', '15', '30']),
           13:generate_buttons(['-273.15 K', '293.15 K','10000 K','-20 K']),
-          14:generate_buttons(['aumenta', 'è costante', 'diminuisce', 'vale 100 K'])}
+          14:generate_buttons(['aumenta', 'è costante', 'diminuisce', 'vale 100 K']),
+          15:generate_buttons(['primo', 'secondo', 'terzo', 'quarto']),
+          16:generate_buttons(['0 gradi', '-135 gradi', '90 gradi', '-pi/2']),
+          17:generate_buttons(['10', 'indefinito', '5/sqrt(2)', '0']),
+          18:generate_buttons(['0', '5/sqrt(2)', '10', '5*sqrt(2)']),
+          19:generate_buttons(['100 kg', '1 tonnellata', '10 kg', '1000 g'])}
 right_answer = {0:"volt (V)",
                 1:"5",
                 2:"ampere (A)",
@@ -52,4 +62,9 @@ right_answer = {0:"volt (V)",
                 11:"25",
                 12:"30",
                 13:"293.15 K",
-                14:"è costante"}
+                14:"è costante",
+                15:"quarto",
+                16:"-135 gradi",
+                17:"0",
+                18:"5*sqrt(2)",
+                19:"1 tonnellata"}
