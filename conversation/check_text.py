@@ -64,7 +64,7 @@ def execute(update, context):
             msg += "\n\nQuando lo hai fatto premi il pulsante seguente:"
             time.sleep(0.5)
             context.bot.send_message(chat_id=update.message.chat_id, text=msg,
-                                     reply_markup=reply_markup, disable_web_page_preview=True)
+                                     reply_markup=reply_markup, disable_web_page_preview=True, parse_mode=ParseMode.MARKDOWN)
 
             # bind the user to its button using chat_data
             context.chat_data[update.message.message_id + 2] = update.message.from_user.id
