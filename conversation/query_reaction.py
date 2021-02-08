@@ -43,7 +43,9 @@ def execute(update, context):
             # check correctness
             if query.data == right_answer[context.chat_data[query.message.message_id]['question_id']]:
                 msg2 = context.bot.send_message(chat_id=query.message.chat_id,
-                                         text="Risposta corretta {username}! Buona permanenza nel gruppo!".format(
+                                         text="Risposta corretta!")
+                context.bot.send_message(chat_id=query.message.chat_id,
+                                         text="Benvenuto {username} e buona permanenza nel gruppo!".format(
                                              username=query.from_user.name))
                 # restore standard permissions
                 context.bot.restrictChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id,
@@ -68,7 +70,7 @@ def execute(update, context):
             else:
                 msg = "Risposta errata! Entro 15 secondi sarai rimosso dal gruppo.\n"
                 msg += "Rientra quando vuoi ma dovrai rispondere correttamente per poter rimanere."
-                msg = context.bot.send_message(chat_id=query.message.chat_id, text=msg)
+                msg2 = context.bot.send_message(chat_id=query.message.chat_id, text=msg)
 
                 # delete history
                 context.bot.delete_message(chat_id=query.message.chat_id,
@@ -79,7 +81,9 @@ def execute(update, context):
                 # kick the user after a given delay and clean the chat
                 def delayed_kick(context, query=query):
                     context.bot.delete_message(chat_id=query.message.chat_id,
-                                           message_id=msg.message_id)
+                                           message_id=msg1.message_id)
+                    context.bot.delete_message(chat_id=query.message.chat_id,
+                                           message_id=msg2.message_id)
                     context.bot.kickChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id)
                     context.bot.unbanChatMember(chat_id=query.message.chat_id, user_id=query.from_user.id)
 
