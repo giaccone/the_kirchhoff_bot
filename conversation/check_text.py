@@ -51,11 +51,10 @@ def execute(update, context):
             context.chat_data[update.message.from_user.id] = 3
         # after third warning (above) the user permission are restricted
         elif context.chat_data[update.message.from_user.id] == 3:
-            msg = "*Sei stato avvisato tre volte*: mi spiace ma fra 15 secondi sarai rimosso dal gruppo."
-            msg += "\nRientra quando avrai impostato uno username"
+            msg = "*Sei stato avvisato tre volte*: mi spiace ma ti saranno revocati i permessi di scrivere nel gruppo.\n\n"
             update.message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
-            # prepare a button fro the user to notify that he has set the username
+            # prepare a button for the user to notify that he has set the username
             buttons = [[InlineKeyboardButton("Ok, ho impostato uno username.", callback_data="I'm ready")]]
             reply_markup = InlineKeyboardMarkup(buttons)
             msg = "D'ora in poi non puoi più scrivere messaggi. Verrai nuovamente abilitato"
