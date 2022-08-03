@@ -16,7 +16,7 @@ def execute(update, context):
     """
 
     # check if user have a username
-    if update.message.from_user.username is None:
+    if (update.message.from_user.username is None) and (update.message.sender_chat.type != 'channel'):
         # check if the user have already been warned about missing username
         if update.message.from_user.id not in context.chat_data:
             # chat_data is used to register the number of warnings
