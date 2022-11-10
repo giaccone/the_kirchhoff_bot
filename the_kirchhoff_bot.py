@@ -93,9 +93,13 @@ def main():
     pin_handler = CommandHandler('pin', cmd.pin.execute)
     dispatcher.add_handler(pin_handler)
 
-    # /pin handler
+    # /send_file handler
     send_file_handler = CommandHandler('send_file', cmd.send_file.execute)
     dispatcher.add_handler(send_file_handler)
+
+    # /send_image handler
+    send_image_handler = CommandHandler('send_image', cmd.send_image.execute)
+    dispatcher.add_handler(send_image_handler)
     
     # welcome
     add_group_handle = MessageHandler(Filters.status_update.new_chat_members, cnv.welcome.execute)
