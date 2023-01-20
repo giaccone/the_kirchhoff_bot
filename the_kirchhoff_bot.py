@@ -30,6 +30,10 @@ def main():
     help_handler = CommandHandler('help', cmd.help.execute)
     application.add_handler(help_handler)
 
+    # /help handler
+    test_handler = CommandHandler('test', cmd.test.execute)
+    application.add_handler(test_handler)
+
     # /send handler
     send_handler = CommandHandler('send', cmd.send.execute)
     application.add_handler(send_handler)
