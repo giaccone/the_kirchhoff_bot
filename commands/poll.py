@@ -3,7 +3,7 @@ from telegram import Poll
 
 
 @restricted
-def execute(update, context):
+async def execute(update, context):
     """
     'poll' create a new poll
 
@@ -14,7 +14,7 @@ def execute(update, context):
     if update.message.text.strip() == "/poll":
         msg = "These are examples of POLL. Use the command followed by any of these examples.\n\n"
         msg += "Regular - anonymous:\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
 
@@ -23,12 +23,12 @@ def execute(update, context):
         msg += "#O: 876\n"
         msg += "#O: 8760\n"
         msg += "#O: 87600\n\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
 
         msg = "Regular - multiple answers:\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
 
@@ -38,12 +38,12 @@ def execute(update, context):
         msg += "#O: 8760\n"
         msg += "#O: 87600\n"
         msg += "#M: 1\n\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
         
         msg = "Regular - not anonymous:\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
 
@@ -53,12 +53,12 @@ def execute(update, context):
         msg += "#O: 8760\n"
         msg += "#O: 87600\n"
         msg += "#A: 0\n\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
 
         msg = "Quiz - anonymous:\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
         msg = "#Q: How many hours in a year?\n"
@@ -69,7 +69,7 @@ def execute(update, context):
         msg += "#R: 2 (0-based)\n"
         msg += "#A: 1\n"
         msg += "#T: quiz\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
     else:
@@ -100,7 +100,7 @@ def execute(update, context):
             elif "#M:" in line.upper():
                 multiple_answer = bool(float(line.replace("#M:", "").replace("#m:", "").strip()))
 
-        context.bot.send_poll(chat_id=update.message.chat_id,
+        await context.bot.send_poll(chat_id=update.message.chat_id,
                               question=question,
                               options=options,
                               disable_notification=False,
@@ -110,4 +110,4 @@ def execute(update, context):
                               allows_multiple_answers=multiple_answer)
 
     # remove command
-    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+    await context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)

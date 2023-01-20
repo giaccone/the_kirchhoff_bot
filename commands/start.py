@@ -1,7 +1,7 @@
-from telegram import ParseMode
+from telegram.constants import ParseMode
 
 
-def execute(update, context):
+async def execute(update, context):
     """
     'start' provides the start message
 
@@ -9,9 +9,10 @@ def execute(update, context):
     :param context: CallbackContext
     :return: None
     """
-    msg = "*Ciao*, sono @the\_kirchhoff\_bot \n\n"
-    msg += "Sono qui per aiutarti a gestire il tuo gruppo Telegram."
+    msg = "Ciao,\nsono @the\_kirchhoff\_bot \n\n"
+    msg += "Puoi considerami il professore dei professori di Elettrotecnica ed\n"
+    msg += "il mio nome completo è _Gustav Robert Kirchhoff_."
 
-    context.bot.send_message(chat_id=update.message.chat_id,
+    await context.bot.send_message(chat_id=update.message.chat_id,
                              text=msg,
                              parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)

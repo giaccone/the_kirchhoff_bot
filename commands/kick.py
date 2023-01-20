@@ -1,8 +1,9 @@
 from util.decorators import restricted
+import asyncio
 
 
 @restricted
-def execute(update, context):
+async def execute(update, context):
     """
     'kick' kick user out from the group
 
@@ -11,8 +12,9 @@ def execute(update, context):
     :return: None
     """
     user_id = update.message.reply_to_message.from_user.id
-    context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=user_id)
-    context.bot.unbanChatMember(chat_id=update.message.chat_id, user_id=user_id)
+    await context.bot.ban_chat_member(chat_id=update.message.chat_id, user_id=user_id)
+    await asyncio.sleep(2)
+    await context.bot.unban_chat_member(chat_id=update.message.chat_id, user_id=user_id)
 
     # remove command
-    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+    await context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)

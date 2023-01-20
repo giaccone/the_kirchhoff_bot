@@ -2,7 +2,7 @@ from util.decorators import restricted
 
 
 @restricted
-def execute(update, context):
+async def execute(update, context):
     """
     'job_stop' stops a job
 
@@ -18,4 +18,4 @@ def execute(update, context):
             ele.schedule_removal()
 
     # remove command
-    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+    await context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)

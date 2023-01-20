@@ -6,7 +6,7 @@ import uuid
 import time
 
 
-def execute(update, context):
+async def execute(update, context):
     """
     'welcome_message' generated the message sent to new users joining the group
 
@@ -28,21 +28,21 @@ def execute(update, context):
             msg += "Ciao {username}!\n".format(username=member.username)
             msg += "Benvenuto nel gruppo. Per poter rimanere dovrai rispondere alla seguente domanda.\n"
             msg += "(Se sbagli sarai rimosso dal gruppo con possibilità di rientrare quando vuoi)."
-        update.message.reply_text(msg)
+        await update.message.reply_text(msg)
 
         # update chat_data with the used_id and the index of its question
         # pick a random question
         question_id = randrange(len(question))
         # remove permissions
-        context.bot.restrictChatMember(chat_id=update.message.chat_id, user_id=member.id,
-                                       permissions=initial_permission)
+        await context.bot.restrict_chat_member(chat_id=update.message.chat_id, user_id=member.id,
+                                    permissions=initial_permission)
 
         # send the question
         question_text = "{name}\n".format(name=member.name) + question[question_id]
         possible_answers = answer[question_id]
         reply_markup = InlineKeyboardMarkup(possible_answers)
         time.sleep(0.5)
-        context.bot.send_message(chat_id=update.message.chat_id, text=question_text, reply_markup=reply_markup)
+        await context.bot.send_message(chat_id=update.message.chat_id, text=question_text, reply_markup=reply_markup)
 
         # generate a random key
         key = str(uuid.uuid4())

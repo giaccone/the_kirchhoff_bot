@@ -2,7 +2,7 @@ from util.decorators import restricted
 
 
 @restricted
-def execute(update, context):
+async def execute(update, context):
     """
     'cg' (clean group) remove inactive users
 
@@ -11,8 +11,8 @@ def execute(update, context):
     :return: None
     """
     for member in context.chat_data:
-        context.bot.kickChatMember(chat_id=update.message.chat_id, user_id=member)
-        context.bot.unbanChatMember(chat_id=update.message.chat_id, user_id=member)
+        await context.bot.ban_chat_member(chat_id=update.message.chat_id, user_id=member)
+        await context.bot.unban_chat_member(chat_id=update.message.chat_id, user_id=member)
 
     # remove command
-    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+    await context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)

@@ -4,7 +4,7 @@ import datetime
 
 
 @restricted
-def execute(update, context):
+async def execute(update, context):
     """
     'spoll' schedule a new poll
 
@@ -15,7 +15,7 @@ def execute(update, context):
     if update.message.text.strip() == "/spoll":
         msg = "These are examples of scheduled POLL. Use the command followed by any of these examples.\n\n"
         msg += "Regular - anonymous:\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
 
@@ -26,12 +26,12 @@ def execute(update, context):
         msg += "#O: 87600\n"
         msg += "#D: 1-9-2020\n"
         msg += "#H: 16:15\n\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
 
         msg = "Regular - not anonymous:\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
 
@@ -43,12 +43,12 @@ def execute(update, context):
         msg += "#A: 0\n"
         msg += "#D: 1-9-2020\n"
         msg += "#H: 16:15\n\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
 
         msg = "Quiz - anonymous:\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
         msg = "#Q: How many hours in a year?\n"
@@ -61,7 +61,7 @@ def execute(update, context):
         msg += "#T: quiz\n"
         msg += "#D: 1-9-2020\n"
         msg += "#H: 16:15\n\n"
-        context.bot.send_message(chat_id=update.message.chat_id,
+        await context.bot.send_message(chat_id=update.message.chat_id,
                                  text=msg,
                                  disable_web_page_preview=True)
     else:
@@ -95,8 +95,8 @@ def execute(update, context):
                 time_string = line.replace("#H:", "").replace("#h:", "").strip()
                 time = [int(k) for k in time_string.split(":")]
 
-        def poll_now(context, update=update):
-            msg_poll = context.bot.send_poll(chat_id=update.message.chat_id,
+        async def poll_now(context, update=update):
+            msg_poll = await context.bot.send_poll(chat_id=update.message.chat_id,
                                              question=question,
                                              options=options,
                                              disable_notification=False,
@@ -104,7 +104,7 @@ def execute(update, context):
                                              is_anonymous=anonymity,
                                              correct_option_id=correct_option)
 
-            context.bot.pin_chat_message(chat_id=update.message.chat_id, message_id=msg_poll.message_id,
+            await context.bot.pin_chat_message(chat_id=update.message.chat_id, message_id=msg_poll.message_id,
                                          disable_notification=False)
 
         time = datetime.datetime(date[2], date[1], date[0], time[0], time[1], 0, 0)
@@ -113,4 +113,4 @@ def execute(update, context):
         context.job_queue.run_once(poll_now, time - datetime.datetime.now(), name=name)
 
     # remove command
-    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+    await context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)

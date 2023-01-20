@@ -1,10 +1,8 @@
-from telegram import ParseMode
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from util.permission import initial_permission
-import time
+from telegram.constants import ParseMode
 from configparser import ConfigParser
 
-def execute(update, context):
+
+async def execute(update, context):
     """
     'check_text' reply to selected text messages
     * warn users without username
@@ -18,8 +16,8 @@ def execute(update, context):
     # check presenza of hot words
     if 'voltaggio' in update.message.text.lower():
         msg = "Il termine voltaggio, sebbene sia largamente utilizzato *è scorretto*. Ti vieto di utilizzarlo!"
-        update.message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
-        context.bot.send_photo(chat_id=update.message.chat_id, photo=open('./resources/voltaggio.png', 'rb'))
+        await update.message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
+        await context.bot.send_photo(chat_id=update.message.chat_id, photo=open('./resources/voltaggio.png', 'rb'))
     
     # detect macro
     if update.message.text.lower().strip()[0] == '!':
@@ -33,12 +31,12 @@ def execute(update, context):
             if 'path' in config[key]: 
                 path = config[key]['path'].replace('"','')
                 msg = config[key]['msg'].replace('"','')
-                context.bot.send_photo(chat_id=update.message.chat_id, photo=open(path, 'rb'))
-                context.bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.MARKDOWN)
+                await context.bot.send_photo(chat_id=update.message.chat_id, photo=open(path, 'rb'))
+                await context.bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.MARKDOWN)
             # otherwise it is another command
             else:
                 msg = config[key]['msg'].replace('"','')
-                context.bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.MARKDOWN)
+                await context.bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.MARKDOWN)
 
         # other hardcoded commands
         elif key == 'list':
@@ -50,10 +48,10 @@ def execute(update, context):
                     if element != 'DEFAULT':
                         msg += f"  !{element}\n"
 
-            context.bot.send_message(chat_id=update.message.chat_id, text=msg)
+            await context.bot.send_message(chat_id=update.message.chat_id, text=msg)
                
         else:
             msg = "la macro *!{}* non è registrata".format(key)
-            context.bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.MARKDOWN)
+            await context.bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.MARKDOWN)
         
         del config

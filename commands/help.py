@@ -1,7 +1,7 @@
-from telegram import ParseMode
+from telegram.constants import ParseMode
 
 
-def execute(update, context):
+async def execute(update, context):
     """
     'help' provides information about the use of the bot
 
@@ -10,11 +10,11 @@ def execute(update, context):
     :return: None
     """
     msg = "*Ciao*, sono @the\_kirchhoff\_bot .\n\n"
-    msg += "I miei comandi sono:\n"
-    msg += " \* /start\n"
-    msg += " \* /help\n"
-    msg += " \* /r (solo admin)\n"
+    msg += "Son qui qui prevalentemente per controllare cosa succede.\n"
+    msg += "Come utente del gruppo hai a disposizione alcune macro attivabili con il carattere speciale '!'\n\n"
+    msg += "prova a scrivere ```!list```"
+    
 
-    context.bot.send_message(chat_id=update.message.chat_id,
+    await context.bot.send_message(chat_id=update.message.chat_id,
                              text=msg,
                              parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
