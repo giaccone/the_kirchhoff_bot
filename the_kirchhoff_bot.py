@@ -13,8 +13,15 @@ import logging
 
 # set basic logging
 # -----------------
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(filename='tkb.log',
+                    encoding='utf-8',
+                    level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# set higher logging level for httpx to avoid all GET and POST requests being logged
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("apscheduler").setLevel(logging.WARNING)
+
+logger = logging.getLogger(__name__)
 
 # bot - main
 # ==========

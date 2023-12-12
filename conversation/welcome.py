@@ -6,6 +6,10 @@ import uuid
 import time
 from configparser import ConfigParser
 import asyncio
+import logging
+
+# setup logger
+logger = logging.getLogger(__name__)
 
 
 async def execute(update, context):
@@ -22,15 +26,18 @@ async def execute(update, context):
     if config['entry_test']['active'] == 'True':
         # welcome message
         for member in update.message.new_chat_members:
+            # get username or name
+            username = "@" + member.username if member.username is not None else member.name
+            # prepare msg
             msg = ""
             if member.username is None:
-                msg += "Benvenuto {name}. Per prima cosa imposta uno username ".format(name=member.name)
+                msg += "Benvenuto {name}. Per prima cosa imposta uno username ".format(name=username)
                 msg += "per facilitare le conversazioni future, grazie.\n\n"
                 msg += "Inoltre, per poter rimanere dovrai rispondere correttamente alla seguente domanda.\n"
                 msg += "(Se sbagli sarai rimosso dal gruppo con possibilità di rientrare quando vuoi)."
                 context.chat_data[member.id] = 0
             else:
-                msg += "Ciao {username}!\n".format(username=member.username)
+                msg += "Ciao {username}!\n".format(username=username)
                 msg += "Benvenuto nel gruppo. Per poter rimanere dovrai rispondere alla seguente domanda.\n"
                 msg += "(Se sbagli sarai rimosso dal gruppo con possibilità di rientrare quando vuoi)."
             await update.message.reply_text(msg)
@@ -59,19 +66,39 @@ async def execute(update, context):
             context.chat_data[message_id]['question_id'] = question_id
             context.chat_data[message_id]['to_be_deleted'] = [update.message.message_id, update.message.message_id + 1]
             context.user_data[member.id] = key
+
+            chat_title = update.message.chat.title
+            chat_id = update.message.chat_id
+            logger.info("NEW TEST - chat: %s - chat_id: %s - username: %s - id: %s", chat_title,
+                                                                                     chat_id,
+                                                                                     username,
+                                                                                     member.id)
+
+            
         
     elif config['entry_test']['active'] == 'False':
         for member in update.message.new_chat_members:
+            # get username or name
+            username = "@" + member.username if member.username is not None else member.name
+            # prepare msg
             msg = ""
             if member.username is None:
-                msg += "Benvenuto {name}. Per favore imposta uno username ".format(name=member.name)
+                msg += "Benvenuto {name}. Per favore imposta uno username ".format(name=username)
                 msg += "per facilitare le conversazioni future, grazie.\n\n"
                 context.chat_data[member.id] = 0
             else:
-                msg += "Ciao {username}!\n".format(username=member.username)
+                msg += "Ciao {username}!\n".format(username=username)
                 msg += "Benvenuto nel gruppo."
             sent_message = await update.message.reply_text(msg)
             await asyncio.sleep(10)
             await context.bot.delete_message(chat_id=update.message.chat_id, message_id=sent_message.message_id)
+            
+            chat_title = update.message.chat.title
+            chat_id = update.message.chat_id
+            logger.info("NEW USER - chat: %s - chat_id: %s - username: %s - id: %s", chat_title,
+                                                                                     chat_id,
+                                                                                     username,
+                                                                                     member.id)
+
 
 

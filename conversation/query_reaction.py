@@ -1,6 +1,10 @@
 from util.question_database import right_answer
 from util.permission import standard_permissions
 import asyncio
+import logging
+
+# setup logger
+logger = logging.getLogger(__name__)
 
 
 async def execute(update, context):
@@ -49,6 +53,13 @@ async def execute(update, context):
                 await context.bot.send_message(chat_id=query.message.chat_id,
                                         text="Benvenuto {username} e buona permanenza nel gruppo!".format(
                                             username=query.from_user.name))
+                chat_title = query.message.chat.title
+                chat_id = query.message.chat.id
+                logger.info("ANSWERED CORRECTELY - chat: %s - chat_id: %s - username: %s - id: %s", chat_title,
+                                                                                                    chat_id,
+                                                                                                    query.from_user.name,
+                                                                                                    query.from_user.id)
+                
                 # restore standard permissions
                 await context.bot.restrict_chat_member(chat_id=query.message.chat_id, user_id=query.from_user.id,
                                             permissions=standard_permissions)
@@ -81,6 +92,12 @@ async def execute(update, context):
                                         message_id=context.chat_data[query.message.message_id]['to_be_deleted'][1])
 
                 # kick the user after a given delay and clean the chat
+                chat_title = query.message.chat.title
+                chat_id = query.message.chat.id
+                log_message = "ANSWERED WRONGLY - chat: {} - chat_id: {} - username: {} - id: {}".format(chat_title,
+                                                                                                         chat_id,
+                                                                                                         query.from_user.name,
+                                                                                                         query.from_user.id)
                 async def delayed_kick(context, query=query):
                     await context.bot.delete_message(chat_id=query.message.chat_id,
                                         message_id=msg1.message_id)
@@ -89,6 +106,7 @@ async def execute(update, context):
                     await context.bot.ban_chat_member(chat_id=query.message.chat_id, user_id=query.from_user.id)
                     await asyncio.sleep(2)
                     await context.bot.unban_chat_member(chat_id=query.message.chat_id, user_id=query.from_user.id)
+                    logger.info(log_message)
 
                 context.job_queue.run_once(delayed_kick, 15)
 
